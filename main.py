@@ -84,7 +84,12 @@ print('> Converted the image to the dimensions of: %s x %s'%(w,h))
 
 Best = Image.new('RGB',(w,h),(255,255,255))
 try:
-    m = open(FILEDIR +  'best.png')
+    m = Image.open(FILEDIR +  'best.png','r')
+
+    w1 , h1 = m.size
+    if w1 != w or h1 != h:
+        Best.save(FILEDIR + 'best.png')
+        Best.save(FILEDIR + 'gbest.png')
 except FileNotFoundError:
     Best.save(FILEDIR + 'best.png')
 try:
