@@ -84,12 +84,7 @@ print('> Converted the image to the dimensions of: %s x %s'%(w,h))
 
 Best = Image.new('RGB',(w,h),(255,255,255))
 try:
-    m = Image.open(FILEDIR +  'best.png','r')
-
-    w1 , h1 = m.size
-    if w1 != w or h1 != h:
-        Best.save(FILEDIR + 'best.png')
-        Best.save(FILEDIR + 'gbest.png')
+    m = open(FILEDIR +  'best.png')
 except FileNotFoundError:
     Best.save(FILEDIR + 'best.png')
 try:
@@ -103,12 +98,12 @@ Draw = ImageDraw.Draw(Best)
 
 
 
-accuracy = 30
+accuracy = 5
 if accuracy >= 1000:
     print('[!] The accuracy cannot be over 999!')
     exit()
 cycleRate = accuracy*2
-colorTry = round(accuracy/2.0)
+colorTry = accuracy
 
 
 man = mp.Manager()
