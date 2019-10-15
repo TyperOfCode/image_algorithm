@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw, ImageFile
 import math
 import random
-import multiprocessing as mp
 import sys
 import os
 FILEPATH = os.path.abspath(__file__)
@@ -43,7 +42,7 @@ def randColor(preBest=None):
     if preBest == None or True:
         return (random.randint(0,255),random.randint(0,255),random.randint(0,255))
     else:
-        return (preBest[3][0] + random.randint(-150,150), preBest[3][1] + random.randint(-150,150),preBest[3][2] + random.randint(-150,150))
+        return (preBest[3][0] + random.randint(-200,200), preBest[3][1] + random.randint(-200,200),preBest[3][2] + random.randint(-200,200))
 def drawOutlined(xy1,xy2,xy3,c,outlineC,thickness ,im, name):
     D = ImageDraw.Draw(im)
     D.polygon([xy1,xy2,xy3],fill=c)
@@ -108,18 +107,18 @@ if accuracy >= 1000:
     print('[!] The accuracy cannot be over 999!')
     exit()
 cycleRate = accuracy*2
-colorTry = accuracy
+colorTry = round(accuracy/2.0)
 
 
-man = mp.Manager()
-
-imgList = man.list()
 
 
-cycles = man.Value('i',0)
+imgList = []
+
+
+cycles = 0
 generations = 0
 Bests = []
-Scores = man.list()
+Scores = []
 
 while True:
     GhostBest = Image.new('RGB',(w,h),(255,255,255))
@@ -128,10 +127,10 @@ while True:
     for x1 in range(w):
         for y1 in range(h):
             GG[x1,y1] = RM[x1,y1]
-    count = man.Value('i',0)
+    count = 0
     
     jobs = []
-    print('tasks starting...')
+    print('starting gen...')
     for i1 in range(cycleRate):
 
         def inArea(lis,img):
@@ -160,40 +159,29 @@ while True:
                 #exit()
         
         Norm = Image.open(FILEDIR + 'best.png')
-        def task():
-            rand = get(w,h,GG)
-            rand1 = rand[0]
-            rand2 = rand[1]
-            rand3 = rand[2]
+
+        rand = get(w,h,GG)
+        rand1 = rand[0]
+        rand2 = rand[1]
+        rand3 = rand[2]
+
+        
+
+        for i2 in range(colorTry):
+            
+            if Bests == []:
+                col = randColor()
+            else:
+                zBests = list(Bests)
+                zBests.reverse()
+                col = randColor(zBests[0])
 
             
-
-            for i2 in range(colorTry):
-                
-                if Bests == []:
-                    col = randColor()
-                else:
-                    zBests = list(Bests)
-                    zBests.reverse()
-                    col = randColor(zBests[0])
-
-                
-                img = MakeTriangle(rand1, rand2, rand3,col,Norm)
-                imgList.append([score(Real_IM,img),(rand1,rand2,rand3,col)])
-            cycles.value += 1
-            count.value += 1
+            img = MakeTriangle(rand1, rand2, rand3,col,Norm)
+            imgList.append([score(Real_IM,img),(rand1,rand2,rand3,col)])
+        cycles += 1
+        count+= 1
         
-        process = mp.Process(target=task)
-        try:
-            process.start()
-        except OSError:
-            continue
-        jobs.append(process)
-
-
-    for job in jobs:
-        if job != None:
-            job.join()
 
 
     b = 100000000000000000000000000000000000000000000000000000
@@ -227,10 +215,10 @@ while True:
     
     drawOutlined(b1[0],b1[1],b1[2],b1[3],(255,0,0),3,GhostBest,FILEDIR+ "GBEST.png")
     GhostBest.save(FILEDIR + "GBEST.png")
-    imgList = man.list()
+    imgList = []
     generations += 1
 
 
     scoreR = score(Real_IM,Best)
-    print("\n\n--------------------\n\nGeneration: %s \tCycles: %s\t Chose Best. Image error: %s"%(generations,cycles.value,scoreR))
+    print("\n\n--------------------\n\nGeneration: %s \tCycles: %s\t Chose Best. Image error: %s"%(generations,cycles,scoreR))
     Scores.append(scoreR)
