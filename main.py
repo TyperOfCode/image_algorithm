@@ -69,7 +69,7 @@ def condvert(imggg, pixelo):
 
 try:
     
-    Real_IM = condvert(FILEDIR +"Image.png",160)
+    condvert(FILEDIR +"Image.png",160)
     Real_IM = Image.open(FILEDIR +"Image.png","r")
     
 except FileNotFoundError:
@@ -81,23 +81,23 @@ w, h = Real_IM.size
 print('> Converted the image to the dimensions of: %s x %s'%(w,h))
 
 
-Best = Image.new('RGB',(w,h),(255,255,255))
+blank = Image.new('RGB',(w,h),(255,255,255))
 try:
     m = Image.open(FILEDIR +  'best.png','r')
 
     w1 , h1 = m.size
     if w1 != w or h1 != h:
-        Best.save(FILEDIR + 'best.png')
-        Best.save(FILEDIR + 'gbest.png')
+        blank.save(FILEDIR + 'best.png')
+        blank.save(FILEDIR + 'gbest.png')
 except FileNotFoundError:
-    Best.save(FILEDIR + 'best.png')
+    blank.save(FILEDIR + 'best.png')
 try:
-    m = open(FILEDIR +  'gbest.png')
+    m = open(FILEDIR +  'gbest.png','r')
 except FileNotFoundError:
-    Best.save(FILEDIR + 'gbest.png')
+    blank.save(FILEDIR + 'gbest.png')
 
+Best =Image.open(FILEDIR+'best.png')
 
-RM = Best.load()
 Draw = ImageDraw.Draw(Best)
 
 
@@ -121,6 +121,7 @@ Bests = []
 Scores = []
 
 while True:
+    RM = Image.open(FILEDIR+'best.png').load()
     GhostBest = Image.new('RGB',(w,h),(255,255,255))
     GG = GhostBest.load()
     
@@ -194,9 +195,10 @@ while True:
 
     Bests.append(b1)
     
+    
     DrawG = ImageDraw.Draw(GhostBest)
     DrawG.polygon([b1[0],b1[1],b1[2]],fill=b1[3])
-    GhostBest.save(FILEDIR + "GBEST.png")
+    GhostBest.save(FILEDIR + "gbest.png")
     scoreG = score(Real_IM,GhostBest)
     if len(Scores) != 0:
         if scoreG <= Scores[len(Scores)-1]:
@@ -213,8 +215,8 @@ while True:
             
 
     
-    drawOutlined(b1[0],b1[1],b1[2],b1[3],(255,0,0),3,GhostBest,FILEDIR+ "GBEST.png")
-    GhostBest.save(FILEDIR + "GBEST.png")
+    drawOutlined(b1[0],b1[1],b1[2],b1[3],(255,0,0),3,GhostBest,FILEDIR+ "gbest.png")
+    GhostBest.save(FILEDIR + "gbest.png")
     imgList = []
     generations += 1
 
