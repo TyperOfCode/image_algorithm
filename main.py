@@ -84,15 +84,18 @@ print('> Converted the image to the dimensions of: %s x %s'%(w,h))
 blank = Image.new('RGB',(w,h),(255,255,255))
 try:
     m = Image.open(FILEDIR +  'best.png','r')
+    
 
     w1 , h1 = m.size
     if w1 != w or h1 != h:
         blank.save(FILEDIR + 'best.png')
         blank.save(FILEDIR + 'gbest.png')
+    
 except FileNotFoundError:
     blank.save(FILEDIR + 'best.png')
 try:
     m = open(FILEDIR +  'gbest.png','r')
+    Scores.append(score(Best,Image.open(FILEDIR+'gbest.png')))
 except FileNotFoundError:
     blank.save(FILEDIR + 'gbest.png')
 
@@ -119,6 +122,7 @@ cycles = 0
 generations = 0
 Bests = []
 Scores = []
+
 
 while True:
     RM = Image.open(FILEDIR+'best.png').load()
