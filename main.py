@@ -2,7 +2,6 @@ import math
 import random
 import sys
 import os
-import numpy as np
 from PIL import Image, ImageDraw, ImageFile
 
 
