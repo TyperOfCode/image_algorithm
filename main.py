@@ -2,6 +2,7 @@ import math
 import random
 import sys
 import os
+import numpy as np
 
 from PIL import Image, ImageDraw, ImageFile
 
@@ -12,7 +13,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def getArea(x1,x2,x3, y1,y2,y3):
-        return abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))/2)
+    return abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))/2)
 
 
 def MakeTriangle(xy1, xy2, xy3, color, im):
@@ -30,18 +31,17 @@ def score(OrgImg, ScoreImg):
     w1, h1 = ScoreImg.size
 
     if w1 != w or h1 != h:
-        print('Error at Score funciton\n\n')
+        print("Error at Score funciton\n\n")
         exit()
-    totalDif = 0
-    pix1 = OrgImg.load()
-    pix2 = ScoreImg.load()
 
-    for y in range(h):
-        for x in range(w):
-            totalDif += getDiffrence(pix1[x,y], pix2[x,y])
+    pix1=np.array(OrgImg, dtype=np.uint64).reshape((h, w, 3))[:, :, :3]
+    pix2 = np.array(ScoreImg, dtype=np.uint64).reshape((h1, w1, 3))
 
-    return totalDif
+    diff = (np.sqrt(np.square(pix1 - pix2).sum(axis=-1)).sum())
 
+
+
+    return diff
 
 def GetPrevious():
     return Image.open(FILEDIR+'best.png')
@@ -125,8 +125,7 @@ if accuracy >= 1000:
     exit()
 
 cycleRate = accuracy*2
-colorTry = round(accuracy/2.0)
-
+colorTry = accuracy
 imgList = []
 
 
