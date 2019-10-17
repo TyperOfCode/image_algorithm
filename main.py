@@ -2,7 +2,7 @@ import math
 import random
 import sys
 import os
-
+import numpy as np
 from PIL import Image, ImageDraw, ImageFile
 
 
@@ -70,17 +70,12 @@ def drawOutlined(xy1, xy2, xy3, c, outlineC, thickness, im, name):
 def condvert(imggg, pixelo):
     he = pixelo
     img = Image.open(imggg)
-    w = img.size[0]
-    h = img.size[1]
-    print('resizing from ' + str(w) + ' / ' + str(h))
-    wpercent = (he/float(img.size[1]))
-    hsize = int((float(img.size[0])*float(wpercent)))
+    print("resizing from {}/{}".format(img.size))
+    w, h = img.size
+    wpercent = he / float(h)
+    hsize = int(float(w) * float(wpercent))
     img = img.resize((hsize, he), Image.ANTIALIAS)
-    img.save(imggg)
-    img = Image.open(imggg)
-    w = img.size[0]
-    h = img.size[1]
-    print('resized to ' + str(w) + ' / ' + str(h))
+    print("resized to {}/{}".format(img.size))
     img.save(imggg)
 
 
@@ -96,7 +91,15 @@ print('> Converted the image to the dimensions of: %s x %s'%(w,h))
 
 blank = Image.new('RGB', (w,h), (255,255,255))
 
+
+
+cycles = 0
+generations = 0
+Bests = []
+Scores = []
+
 try:
+    
     m = Image.open(FILEDIR+'best.png', 'r')
     w1 , h1 = m.size
     if w1 != w or h1 != h:
@@ -106,28 +109,26 @@ except FileNotFoundError:
     blank.save(FILEDIR+'best.png')
 
 try:
+    Best = Image.open(FILEDIR+'best.png')
     m = open(FILEDIR+'gbest.png', 'r')
-    Scores.append(score(Best,Image.open(FILEDIR+'gbest.png')))
+    Scores.append(score(Real_IM,Best))
 except FileNotFoundError:
     blank.save(FILEDIR+'gbest.png')
 
-Best =Image.open(FILEDIR+'best.png')
 
 Draw = ImageDraw.Draw(Best)
 
-accuracy = 5
+accuracy = 30
 if accuracy >= 1000:
     print('[!] The accuracy cannot be over 999!')
     exit()
+
 cycleRate = accuracy*2
 colorTry = round(accuracy/2.0)
 
 imgList = []
 
-cycles = 0
-generations = 0
-Bests = []
-Scores = []
+
 
 while True:
     RM = Image.open(FILEDIR+'best.png').load()
