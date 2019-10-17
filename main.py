@@ -2,6 +2,7 @@ import math
 import random
 import sys
 import os
+
 from PIL import Image, ImageDraw, ImageFile
 
 
@@ -69,12 +70,13 @@ def drawOutlined(xy1, xy2, xy3, c, outlineC, thickness, im, name):
 def condvert(imggg, pixelo):
     he = pixelo
     img = Image.open(imggg)
-    print("resizing from {}/{}".format(img.size))
+
+    print("resizing from {}/{}".format(img.size[0],img.size[1]))
     w, h = img.size
     wpercent = he / float(h)
     hsize = int(float(w) * float(wpercent))
     img = img.resize((hsize, he), Image.ANTIALIAS)
-    print("resized to {}/{}".format(img.size))
+    print("resized to {}/{}".format(img.size[0],img.size[1]))
     img.save(imggg)
 
 
