@@ -119,7 +119,7 @@ except FileNotFoundError:
 
 Draw = ImageDraw.Draw(Best)
 
-accuracy = 30
+accuracy = 5
 if accuracy >= 1000:
     print('[!] The accuracy cannot be over 999!')
     exit()
